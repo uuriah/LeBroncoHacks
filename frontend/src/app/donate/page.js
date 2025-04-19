@@ -9,6 +9,7 @@ export default function Donate() {
     gender: "",
     image: null,
   });
+  const [priceResult, setPriceResult] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -19,10 +20,9 @@ export default function Donate() {
     setFormData({ ...formData, image: e.target.files[0] });
   };
 
-  const handleSubmit =async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form Data:", formData);
-    // Add logic to handle form submission
 
     try {
       const response = await fetch("http://localhost:8080/api/price", {
@@ -30,12 +30,16 @@ export default function Donate() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ query: formData.item}),
+        body: JSON.stringify({ query: formData.item }),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
       const result = await response.json();
-      console.alert("Average price:", result.average_price);
-      // update state or UI here
+      console.log("Average price:", result.average_price);
+      setPriceResult(result.average_price);
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -48,18 +52,19 @@ export default function Donate() {
         onSubmit={handleSubmit}
         className="flex flex-col gap-6 w-full max-w-md bg-white p-6 rounded-lg shadow-md"
       >
-        {/* Clothing Size Input */}
+        {/* Clothing Item Input */}
         <div className="flex flex-col">
-                <label htmlFor="item_name" className="mb-1 text-sm font-medium text-gray-700">Item</label>
-                <input
-                  id="item_name"
-                  name="item"
-                  type="text"
-                  value={formData.item || ""}
-                  onChange={handleInputChange}
-                  placeholder="E.g Men's 501 Levis"
-                  className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+          <label htmlFor="item_name" className="mb-1 text-sm font-medium text-gray-700">Item</label>
+          <input
+            id="item_name"
+            name="item"
+            type="text"
+            value={formData.item || ""}
+            onChange={handleInputChange}
+            placeholder="E.g Men's 501 Levis"
+            className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
         </div>
 
         <div>
@@ -107,22 +112,6 @@ export default function Donate() {
           </select>
         </div>
 
-        {/* Image Upload */}
-        {/* <div>
-          <label htmlFor="image" className="block text-sm font-medium mb-2">
-            Upload Image
-          </label>
-          <input
-            type="file"
-            id="image"
-            name="image"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="w-full border border-gray-300 rounded-lg p-2"
-            required
-          />
-        </div> */}
-
         {/* Submit Button */}
         <button
           type="submit"
@@ -130,6 +119,15 @@ export default function Donate() {
         >
           Submit
         </button>
+        
+        {/* Display price result */}
+        {priceResult !== null && (
+          <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-md">
+            <p className="text-center font-medium">
+              Average price: ${priceResult}
+            </p>
+          </div>
+        )}
       </form>
     </div>
   );
