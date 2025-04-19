@@ -1,8 +1,5 @@
 # 👕 Carbon Closet
 
-**Category:** Sustainability / E-commerce  
-**Goal:** Make sustainable thrifting more fun, accessible, and rewarding for college students and families through a gamified online experience.
-
 ---
 
 ## 🛍️ Overview
