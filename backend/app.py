@@ -11,13 +11,6 @@ from getItemPrice import get_average_price
 # Initialize Flask
 import random
 
-# Initialize Firebase Admin with direct configuration
-cred = credentials.Certificate('C:/Users/monke/Projects/LeBroncoHacks/backend/broncohacks-2025-firebase-adminsdk-fbsvc-6f935b8468.json')
-
-
-firebase_admin.initialize_app(cred)
-db = firestore.client()
-
 # Setup Flask
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000"], supports_credentials=True)
@@ -30,18 +23,15 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Initialize Firebase Admin with path to your new service account key
-# Update this path to where you saved your new service account key
+# Initialize Firebase Admin with path to your service account key
+# Update this path to where you saved your service account key
 SERVICE_ACCOUNT_PATH = 'serviceAccountKey.json'
 cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
-firebase_admin.initialize_app(cred)
+firebase_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 # Initialize Firebase Storage bucket
-# You'll need to get the correct bucket name from Firebase console
-BUCKET_NAME = 'broncohacks-2025.firebasestorage.app'  # Update this if needed
-bucket = storage.bucket(BUCKET_NAME)
-
+bucket = storage.bucket('broncohacks-2025.firebasestorage.app')  # Use default bucket for the initialized app
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -68,11 +58,11 @@ def require_auth(f):
 # @require_auth
 def return_home():
     return jsonify({
-        'message': f"Hello {request.user['email']}"
+        'message': "Hello, welcome to the clothing donation app!"
     })
 
 @app.route("/api/auth/verify", methods=["POST"])
-# @require_auth
+@require_auth
 def verify_token():
     return jsonify({
         'uid': request.user['uid'],
@@ -101,9 +91,9 @@ def signup():
         db.collection('users').document(user.uid).set({
             'name': name,
             'email': email,
-            'tokens' : 0,
-            'Address' : '',
-            'phoneNumber' : '',
+            'tokens': 0,
+            'Address': '',
+            'phoneNumber': '',
             'createdAt': firestore.SERVER_TIMESTAMP
         })
 
@@ -248,10 +238,6 @@ def get_listings():
         print(f"Listing retrieval error: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-
-        return render_template('index.html', average_price=average_price, search_term=search_term)
-
-
 @app.route('/api/clothes', methods=['GET'])
 def getClothes():
     try:
@@ -264,14 +250,14 @@ def getClothes():
             clothes.append({'id': doc.id, **doc.to_dict()})
 
         if len(clothes) < 4:
-            return jsonify({'error': 'Not enough items in the collection'}), 400
+            return jsonify(clothes), 200  # Return available clothes even if less than 4
         
         random_clothes = random.sample(clothes, 4)
 
         return jsonify(random_clothes), 200
 
     except Exception as e: 
-        return jsonify(e), 500
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/clothes', methods=['POST'])
 def newClothes():
