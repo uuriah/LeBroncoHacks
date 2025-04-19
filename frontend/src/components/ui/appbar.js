@@ -30,13 +30,17 @@ export default function AppBar() {
             </Link>
             <span className="text-sm text-gray-600">100 Tokens</span> {/* Value */}
           </div>
-          <button className="p-2 rounded-full hover:bg-gray-200">
-            <User className="w-8 h-8 text-gray-800" />
-          </button>
+          <Link href="/profile">
+            <button className="p-2 rounded-full hover:bg-gray-200">
+              <User className="w-8 h-8 text-gray-800" />
+            </button>
+          </Link>
           {/* Bag Icon */}
-          <button className="p-2 rounded-full hover:bg-gray-200">
-            <ShoppingCart className="w-8 h-8 text-gray-800" />
-          </button>
+          <Link href="/cart">
+            <button className="p-2 rounded-full hover:bg-gray-200">
+              <ShoppingCart className="w-8 h-8 text-gray-800" />
+            </button>
+          </Link>
         </div>
       </div>
     </div>
