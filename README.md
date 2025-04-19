@@ -43,3 +43,45 @@ College students and parents struggle to find sustainable, affordable thrifted c
 - Next.js: Frontend framework primarily used for building web applications, particularly those that need to be fast, SEO-friendly, and scalable.
 - Flask: Python microframework used for building web applications
 
+## Setup Instructions 
+
+### 1. Clone the Repository
+
+```
+git clone https://github.com/uuriah/LeBroncoHacks.git
+```
+### 2. Install Dependencies
+
+#### Front-End:
+```
+cd frontend
+npm install
+```
+
+#### Back-End:
+```
+cd backend
+pip install flask flask-cors firebase-admin bs4 pandas
+```
+
+### 3. Start the Application
+
+Open two separate terminal windows:
+
+**Terminal 1 (Back-end):**
+Navigate to the back-end directory and run:
+```
+flask --app app run
+```
+
+**Terminal 2 (Front-end):**
+
+Navigate to the front-end directory and run the following command:
+```bash
+npm run dev
+```
+
+### 4. Access the Application
+
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
+---
