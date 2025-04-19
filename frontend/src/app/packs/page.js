@@ -44,7 +44,7 @@ export default function PacksPage() {
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Card Packs</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Item Packs</h1>
           <p className="text-lg text-gray-600">Select a pack to open and discover exclusive clothing items!</p>
         </div>
         

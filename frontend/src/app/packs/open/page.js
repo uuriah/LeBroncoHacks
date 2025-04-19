@@ -312,7 +312,7 @@ export default function OpenPack() {
             onClick={() => setShowAllCards(true)}
             className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg flex items-center mx-auto"
           >
-            View All Cards
+            View All Items
           </button>
         </div>
       )}
