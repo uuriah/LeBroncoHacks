@@ -7,7 +7,7 @@
 
 ## 🛍️ Overview
 
-**Clothes Gatcha** is a gamified thrift e-commerce platform that streamlines buying, selling, and donating vintage clothes. It aims to save users time while encouraging sustainable fashion through an engaging token and gacha reward system.
+**Carbon Closet** is a gamified thrift e-commerce platform that streamlines buying, selling, and donating vintage clothes. It aims to save users time while encouraging sustainable fashion through an engaging token and gacha reward system.
 
 ---
 
@@ -22,8 +22,7 @@ College students and parents struggle to find sustainable, affordable thrifted c
 ### 🛒 Buying & Selling (Shop)
 
 - **Sell clothes**: Users can list their clothes. We take a small fee and handle logistics.
-- **Earn tokens**: Sellers receive tokens or coupons as a reward.
-- **Subsidized prices**: We may cover part of the cost to incentivize more sellers.
+- **Earn tokens**: Sellers receive tokens as a reward.
 - **Curated marketplace**: Buyers enjoy a curated feed of vintage and second-hand items.
 
 ### 🎁 Donations
@@ -33,8 +32,7 @@ College students and parents struggle to find sustainable, affordable thrifted c
 
 ### 🎲 Gacha System
 
-- **Premium item drops**: High-value donated items go into a Gacha pool.
-- **Tiered rewards**: Items are ranked (e.g., *Legendary* tier for $150+ items).
+- **Tiered rewards**: Items are ranked (e.g., *Standard* tier for affordable $20 items).
 - **Pack animations**: Gacha spins come with engaging pack-opening visuals.
 - **Reroll feature** *(planned)*: Users can reroll for different items.
 - **Token-based draws**: Use tokens (earned or purchased) to spin for items.
