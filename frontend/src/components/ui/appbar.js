@@ -1,9 +1,13 @@
 "use client";
 import SearchBar from "./searchbar";
 import { User, ShoppingCart, Coins } from "lucide-react";
-import Link from "next/link"; // Import Link from Next.js
+import Link from "next/link";
+import { useTokens } from "@/contexts/tokenContext"; // Import our token hook
 
 export default function AppBar() {
+  // Get the token balance from context
+  const { tokenBalance } = useTokens();
+
   return (
     <div className="w-full bg-gray-100 shadow-md">
       <div className="flex items-center justify-between px-6 py-4">
@@ -21,14 +25,14 @@ export default function AppBar() {
 
         {/* Icons */}
         <div className="flex items-center gap-4">
-          {/* Profile Icon */}
+          {/* Token Balance - Now displays the dynamic token balance */}
           <div className="flex flex-col items-center">
             <Link href="/tokens">
               <button className="p-2 rounded-full hover:bg-gray-200">
                 <Coins className="w-5 h-5" /> {/* Coin Icon */}
               </button>
             </Link>
-            <span className="text-sm text-gray-600">100 Tokens</span> {/* Value */}
+            <span className="text-sm text-gray-600">{tokenBalance} Tokens</span> {/* Dynamic value */}
           </div>
           <Link href="/profile">
             <button className="p-2 rounded-full hover:bg-gray-200">
