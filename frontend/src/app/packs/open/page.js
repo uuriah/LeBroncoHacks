@@ -164,11 +164,11 @@ export default function OpenPack() {
         <div className="w-full max-w-4xl">
           <h1 className="text-3xl font-bold text-center text-gray-900 mb-8">Your Collection Items</h1>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {cards.map((card, index) => (
               <div 
                 key={card.id} 
-                className={`card-reveal bg-white rounded-lg shadow-md overflow-hidden ${
+                className={`card-reveal w-36 bg-white rounded-lg shadow-md overflow-hidden ${
                   card.rarity === 'legendary' ? 'rarity-legendary' : 
                   card.rarity === 'epic' ? 'rarity-epic' : 
                   card.rarity === 'rare' ? 'rarity-rare' : 
@@ -178,12 +178,12 @@ export default function OpenPack() {
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className={`h-2 ${rarityColors[card.rarity]}`}></div>
-                <div className="p-4">
+                <div className="p-3">
                   <div className="relative">
                     <img 
                       src={card.image} 
                       alt={card.name} 
-                      className="w-full h-48 object-cover rounded-md mb-4"
+                      className="w-full h-40 object-cover rounded-md mb-2"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = "/placeholder.jpg";
@@ -191,12 +191,12 @@ export default function OpenPack() {
                     />
                     {card.rarity === 'legendary' && <div className="card-shine"></div>}
                   </div>
-                  <h2 className="text-lg font-semibold">{card.name}</h2>
-                  <div className="flex justify-between items-center mt-2">
-                    <span className={`text-xs font-medium px-2 py-1 rounded-full capitalize text-white ${rarityColors[card.rarity]}`}>
+                  <h2 className="text-sm font-semibold truncate">{card.name}</h2>
+                  <div className="flex justify-between items-center mt-1">
+                    <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full capitalize text-white ${rarityColors[card.rarity]}`}>
                       {card.rarity}
                     </span>
-                    <span className="text-yellow-600 font-bold">{card.tokenValue} tokens</span>
+                    <span className="text-yellow-600 font-bold text-xs">{card.tokenValue}</span>
                   </div>
                 </div>
               </div>
@@ -220,13 +220,13 @@ export default function OpenPack() {
         </div>
       ) : (
         // Card swipe view
-        <div className="w-full max-w-md">
-          <h1 className="text-3xl font-bold text-center text-gray-900 mb-8">
+        <div className="w-full max-w-xs">
+          <h1 className="text-2xl font-bold text-center text-gray-900 mb-6">
             Card {currentCardIndex + 1} of {cards.length}
           </h1>
           
           <div 
-            className="swipe-container"
+            className="swipe-container card-container"
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
@@ -239,7 +239,7 @@ export default function OpenPack() {
                 direction === 'right' ? 'card-swipe-right' : ''
               }`}
             >
-              <div className={`bg-white rounded-xl shadow-xl overflow-hidden relative ${
+              <div className={`w-72 bg-white rounded-xl shadow-xl overflow-hidden relative ${
                 cards[currentCardIndex].rarity === 'legendary' ? 'rarity-legendary' : 
                 cards[currentCardIndex].rarity === 'epic' ? 'rarity-epic' : 
                 cards[currentCardIndex].rarity === 'rare' ? 'rarity-rare' : 
@@ -247,12 +247,12 @@ export default function OpenPack() {
                 'rarity-common'
               }`}>
                 <div className={`h-3 ${rarityColors[cards[currentCardIndex].rarity]}`}></div>
-                <div className="p-6">
+                <div className="p-4">
                   <div className="relative">
                     <img 
                       src={cards[currentCardIndex].image} 
                       alt={cards[currentCardIndex].name} 
-                      className="w-full h-64 object-cover rounded-lg mb-6"
+                      className="w-full h-72 object-cover rounded-lg mb-4"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = "/placeholder.jpg";
@@ -262,13 +262,13 @@ export default function OpenPack() {
                   </div>
                   
                   <div className="animate-fadeIn">
-                    <h2 className="text-2xl font-bold mb-2">{cards[currentCardIndex].name}</h2>
+                    <h2 className="text-xl font-bold mb-2">{cards[currentCardIndex].name}</h2>
                     
-                    <div className="flex justify-between items-center mt-4">
+                    <div className="flex justify-between items-center mt-3">
                       <span className={`text-sm font-medium px-3 py-1 rounded-full text-white capitalize ${rarityColors[cards[currentCardIndex].rarity]}`}>
                         {cards[currentCardIndex].rarity}
                       </span>
-                      <span className="text-yellow-600 font-bold text-xl">
+                      <span className="text-yellow-600 font-bold text-lg">
                         {cards[currentCardIndex].tokenValue} tokens
                       </span>
                     </div>
@@ -279,8 +279,8 @@ export default function OpenPack() {
           </div>
           
           {/* Touch swipe indicators */}
-          <div className="relative mt-8">
-            <div className="flex justify-between">
+          <div className="relative mt-6">
+            <div className="flex justify-between w-72 mx-auto">
               <button
                 onClick={prevCard}
                 disabled={currentCardIndex === 0}
@@ -290,14 +290,14 @@ export default function OpenPack() {
                     : 'bg-blue-600 hover:bg-blue-700'
                 } text-white transition-colors`}
               >
-                <ChevronLeft className="w-6 h-6" />
+                <ChevronLeft className="w-5 h-5" />
               </button>
               
               <button
                 onClick={nextCard}
                 className="p-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
               >
-                <ChevronRight className="w-6 h-6" />
+                <ChevronRight className="w-5 h-5" />
               </button>
             </div>
             
@@ -310,7 +310,7 @@ export default function OpenPack() {
           {/* View all button */}
           <button
             onClick={() => setShowAllCards(true)}
-            className="mt-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg flex items-center mx-auto"
+            className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg flex items-center mx-auto"
           >
             View All Cards
           </button>
