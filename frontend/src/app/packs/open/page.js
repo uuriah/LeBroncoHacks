@@ -204,16 +204,10 @@ export default function OpenPack() {
           </div>
           
           <div className="mt-12 flex flex-col sm:flex-row justify-center gap-4">
-            <Link href="/dashboard">
+            <Link href="/">
               <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg flex items-center">
                 <Home className="w-5 h-5 mr-2" />
                 Dashboard
-              </button>
-            </Link>
-            
-            <Link href="/packs">
-              <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">
-                Open Another Pack
               </button>
             </Link>
           </div>
