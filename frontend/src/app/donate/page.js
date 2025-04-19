@@ -10,6 +10,8 @@ export default function Donate() {
     image: null,
   });
   const [priceResult, setPriceResult] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -17,15 +19,26 @@ export default function Donate() {
   };
 
   const handleFileChange = (e) => {
-    setFormData({ ...formData, image: e.target.files[0] });
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({ ...formData, image: file });
+      // Create a preview URL for the image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsUploading(true);
     console.log("Form Data:", formData);
 
     try {
-      const response = await fetch("http://localhost:8080/api/price", {
+      // First get the average price
+      const priceResponse = await fetch("http://localhost:8080/api/price", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -33,15 +46,48 @@ export default function Donate() {
         body: JSON.stringify({ query: formData.item }),
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      if (!priceResponse.ok) {
+        throw new Error(`HTTP error! Status: ${priceResponse.status}`);
       }
 
-      const result = await response.json();
-      console.log("Average price:", result.average_price);
-      setPriceResult(result.average_price);
+      const priceResult = await priceResponse.json();
+      setPriceResult(priceResult.average_price);
+
+      // Now handle image upload and create listing
+      if (formData.image) {
+        // Create form data for file upload
+        const uploadData = new FormData();
+        uploadData.append('image', formData.image);
+        uploadData.append('item', formData.item);
+        uploadData.append('size', formData.size);
+        uploadData.append('gender', formData.gender);
+        uploadData.append('price', priceResult.average_price);
+
+        const uploadResponse = await fetch("http://localhost:8080/api/upload", {
+          method: "POST",
+          body: uploadData,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error(`Upload error! Status: ${uploadResponse.status}`);
+        }
+
+        const uploadResult = await uploadResponse.json();
+        console.log("Item listed successfully:", uploadResult);
+        
+        // Reset form after successful upload
+        setFormData({
+          item: "",
+          size: "",
+          gender: "",
+          image: null,
+        });
+        setPreviewUrl(null);
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -67,6 +113,7 @@ export default function Donate() {
           />
         </div>
 
+        {/* Size Selection */}
         <div>
           <label htmlFor="size" className="block text-sm font-medium mb-2">
             Clothing Size
@@ -112,12 +159,38 @@ export default function Donate() {
           </select>
         </div>
 
+        {/* Image Upload */}
+        <div>
+          <label htmlFor="image" className="block text-sm font-medium mb-2">
+            Upload Image
+          </label>
+          <input
+            type="file"
+            id="image"
+            name="image"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="w-full border border-gray-300 rounded-lg p-2"
+            required
+          />
+          {previewUrl && (
+            <div className="mt-2">
+              <img 
+                src={previewUrl} 
+                alt="Preview" 
+                className="w-full h-40 object-cover rounded-md" 
+              />
+            </div>
+          )}
+        </div>
+
         {/* Submit Button */}
         <button
           type="submit"
           className="w-full bg-blue-600 text-white font-medium py-2 rounded-lg hover:bg-blue-700 transition"
+          disabled={isUploading}
         >
-          Submit
+          {isUploading ? "Uploading..." : "Submit"}
         </button>
         
         {/* Display price result */}
