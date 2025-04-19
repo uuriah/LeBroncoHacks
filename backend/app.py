@@ -91,6 +91,9 @@ def signup():
         db.collection('users').document(user.uid).set({
             'name': name,
             'email': email,
+            'tokens' : 0,
+            'Address' : '',
+            'phoneNumber' : '',
             'createdAt': firestore.SERVER_TIMESTAMP
         })
 
