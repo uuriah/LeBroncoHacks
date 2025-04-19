@@ -1,5 +1,6 @@
 import { Geist } from "next/font/google";
 import "./globals.css";
+import { TokenProvider } from "@/contexts/tokenContext"; // Import our TokenProvider
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,10 +18,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={geistSans.variable}>
       <body className="bg-gray-50">
-        {/* AppBar is always displayed */}
-        <AppBar />
-        {/* Render the page content */}
-        <main className="p-6">{children}</main>
+        {/* Wrap the entire app with TokenProvider */}
+        <TokenProvider>
+          {/* AppBar is always displayed */}
+          <AppBar />
+          {/* Render the page content */}
+          <main className="p-6">{children}</main>
+        </TokenProvider>
       </body>
     </html>
   );

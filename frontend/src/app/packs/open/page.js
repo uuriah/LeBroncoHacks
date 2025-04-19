@@ -4,9 +4,12 @@ import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
 import Link from 'next/link';
 import './pack-animations.css';
+import { useTokens } from "@/contexts/tokenContext";
 
 export default function OpenPack() {
   // Number of rerolls allowed per pack
+
+  const { addTokens } = useTokens;  
   const MAX_REROLLS = 1;
   const [packOpened, setPackOpened] = useState(false);
   const [packAnimating, setPackAnimating] = useState(false);
@@ -25,7 +28,7 @@ export default function OpenPack() {
   const [totalTokens, setTotalTokens] = useState(0);
   const [isConverting, setIsConverting] = useState(false);
   const packRef = useRef(null);
-  
+
   // Reference to keep track of used rerolls per item (to show visual indicator)
   const [rerolledItems, setRerolledItems] = useState([]);
   
@@ -218,8 +221,19 @@ export default function OpenPack() {
       // Add the token value to the total tokens
       setTotalTokens(prev => prev + itemTokenValue);
       
+      // add tokens to the global token balance using context
+
       // Mark the item as converted
       setConvertedItems(prev => [...prev, index]);
+      
+      // Update the card's rarity to 'converted'
+      const updatedCards = [...cards];
+      updatedCards[index] = {
+        ...updatedCards[index],
+        originalRarity: updatedCards[index].rarity, // Store original rarity
+        rarity: 'converted'
+      };
+      setCards(updatedCards);
       
       // In a real app, you would make an API call to update the user's token balance
       // For example:
@@ -305,7 +319,8 @@ export default function OpenPack() {
     uncommon: 'bg-green-400',
     rare: 'bg-blue-400',
     epic: 'bg-purple-400',
-    legendary: 'bg-yellow-400'
+    legendary: 'bg-yellow-400',
+    converted: 'bg-gray-500' // Add converted color
   };
 
   if (loading) {
@@ -397,6 +412,7 @@ export default function OpenPack() {
               <div 
                 key={card.id} 
                 className={`card-reveal w-full bg-white rounded-lg shadow-md overflow-hidden ${
+                  card.rarity === 'converted' ? 'rarity-converted' :
                   card.rarity === 'legendary' ? 'rarity-legendary' : 
                   card.rarity === 'epic' ? 'rarity-epic' : 
                   card.rarity === 'rare' ? 'rarity-rare' : 
@@ -406,14 +422,9 @@ export default function OpenPack() {
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className={`h-2 ${rarityColors[card.rarity]}`}></div>
-                {rerolledItems.includes(index) && (
+                {rerolledItems.includes(index) && card.rarity !== 'converted' && (
                   <div className="absolute top-2 right-2 bg-purple-500 text-white text-xs px-2 py-1 rounded-full">
                     Rerolled
-                  </div>
-                )}
-                {convertedItems.includes(index) && (
-                  <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-60 flex items-center justify-center">
-                    <div className="text-white text-lg font-bold">Converted to Tokens</div>
                   </div>
                 )}
                 <div className="p-3">
@@ -432,10 +443,12 @@ export default function OpenPack() {
                   <h2 className="text-sm font-semibold truncate">{card.name}</h2>
                   {card.size && <p className="text-xs text-gray-500">Size: {card.size}</p>}
                   <div className="flex justify-between items-center mt-1">
-                    <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full capitalize text-white ${rarityColors[card.rarity]}`}>
-                      {card.rarity}
+                    <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full capitalize text-white ${rarityColors[card.rarity === 'converted' ? (card.originalRarity || 'common') : card.rarity]}`}>
+                      {card.rarity === 'converted' ? (card.originalRarity || 'common') : card.rarity}
                     </span>
-                    <span className="text-yellow-600 font-bold text-xs">{card.tokenValue} tokens</span>
+                    <span className="text-yellow-600 font-bold text-xs">
+                      {card.rarity === 'converted' ? 'Converted' : `${card.tokenValue} tokens`}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -473,13 +486,14 @@ export default function OpenPack() {
               }`}
             >
               <div className={`w-full bg-white rounded-xl shadow-xl overflow-hidden relative ${
+                cards[currentCardIndex]?.rarity === 'converted' ? 'rarity-converted' :
                 cards[currentCardIndex]?.rarity === 'legendary' ? 'rarity-legendary' : 
                 cards[currentCardIndex]?.rarity === 'epic' ? 'rarity-epic' : 
                 cards[currentCardIndex]?.rarity === 'rare' ? 'rarity-rare' : 
                 cards[currentCardIndex]?.rarity === 'uncommon' ? 'rarity-uncommon' : 
                 'rarity-common'
               }`}>
-                <div className={`h-3 ${rarityColors[cards[currentCardIndex]?.rarity]}`}></div>
+                <div className={`h-3 ${rarityColors[cards[currentCardIndex]?.rarity === 'converted' ? (cards[currentCardIndex]?.originalRarity || 'common') : cards[currentCardIndex]?.rarity]}`}></div>
                 <div className="p-4">
                   <div className="relative">
                     <img 
@@ -508,11 +522,15 @@ export default function OpenPack() {
                     )}
                     
                     <div className="flex justify-between items-center mt-3">
-                      <span className={`text-sm font-medium px-3 py-1 rounded-full text-white capitalize ${rarityColors[cards[currentCardIndex]?.rarity]}`}>
-                        {cards[currentCardIndex]?.rarity}
+                      <span className={`text-sm font-medium px-3 py-1 rounded-full text-white capitalize ${rarityColors[cards[currentCardIndex]?.rarity === 'converted' ? (cards[currentCardIndex]?.originalRarity || 'common') : cards[currentCardIndex]?.rarity]}`}>
+                        {cards[currentCardIndex]?.rarity === 'converted' 
+                          ? (cards[currentCardIndex]?.originalRarity || 'common')
+                          : cards[currentCardIndex]?.rarity}
                       </span>
                       <span className="text-yellow-600 font-bold text-lg">
-                        {cards[currentCardIndex]?.tokenValue} tokens
+                        {cards[currentCardIndex]?.rarity === 'converted' 
+                          ? 'Converted' 
+                          : `${cards[currentCardIndex]?.tokenValue} tokens`}
                       </span>
                     </div>
                     
