@@ -82,10 +82,15 @@ export default function PacksPage() {
           ))}
         </div>
         
-        <div className="mt-12 flex justify-center">
+        <div className="mt-12 flex justify-center gap-8">
           <Link href="/tokens">
             <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">
               Buy More Tokens
+            </button>
+          </Link>
+          <Link href="/donate">
+            <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg">
+              Donate Clothes
             </button>
           </Link>
         </div>
