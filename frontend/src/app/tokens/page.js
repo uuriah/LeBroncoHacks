@@ -11,7 +11,7 @@ const bundles = [
 ];
 
 export default function BuyTokensPage() {
-  const [tokenBalance, setTokenBalance] = useState(100); // Example initial balance
+  const [tokenBalance, setTokenBalance] = useState(0); // Example initial balance
 
   const handlePurchase = (tokens) => {
     setTokenBalance(tokenBalance + tokens); // Update token balance
