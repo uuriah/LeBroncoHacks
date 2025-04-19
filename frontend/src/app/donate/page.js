@@ -4,6 +4,7 @@ import { useState } from "react";
 
 export default function Donate() {
   const [formData, setFormData] = useState({
+    item: "",
     size: "",
     gender: "",
     image: null,
@@ -18,10 +19,26 @@ export default function Donate() {
     setFormData({ ...formData, image: e.target.files[0] });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit =async (e) => {
     e.preventDefault();
     console.log("Form Data:", formData);
     // Add logic to handle form submission
+
+    try {
+      const response = await fetch("http://localhost:8080/api/price", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query: formData.item}),
+      });
+
+      const result = await response.json();
+      console.alert("Average price:", result.average_price);
+      // update state or UI here
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
   };
 
   return (
@@ -32,6 +49,19 @@ export default function Donate() {
         className="flex flex-col gap-6 w-full max-w-md bg-white p-6 rounded-lg shadow-md"
       >
         {/* Clothing Size Input */}
+        <div className="flex flex-col">
+                <label htmlFor="item_name" className="mb-1 text-sm font-medium text-gray-700">Item</label>
+                <input
+                  id="item_name"
+                  name="item"
+                  type="text"
+                  value={formData.item || ""}
+                  onChange={handleInputChange}
+                  placeholder="E.g Men's 501 Levis"
+                  className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+        </div>
+
         <div>
           <label htmlFor="size" className="block text-sm font-medium mb-2">
             Clothing Size
@@ -78,7 +108,7 @@ export default function Donate() {
         </div>
 
         {/* Image Upload */}
-        <div>
+        {/* <div>
           <label htmlFor="image" className="block text-sm font-medium mb-2">
             Upload Image
           </label>
@@ -91,7 +121,7 @@ export default function Donate() {
             className="w-full border border-gray-300 rounded-lg p-2"
             required
           />
-        </div>
+        </div> */}
 
         {/* Submit Button */}
         <button
