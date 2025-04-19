@@ -1,5 +1,4 @@
 'use client'
-import Image from "next/image";
 import { useState } from "react";
 
 export default function Donate() {
@@ -12,6 +11,8 @@ export default function Donate() {
   const [priceResult, setPriceResult] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -34,8 +35,9 @@ export default function Donate() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsUploading(true);
-    console.log("Form Data:", formData);
-
+    setErrorMessage("");
+    setSuccessMessage("");
+    
     try {
       // First get the average price
       const priceResponse = await fetch("http://localhost:8080/api/price", {
@@ -47,11 +49,17 @@ export default function Donate() {
       });
 
       if (!priceResponse.ok) {
-        throw new Error(`HTTP error! Status: ${priceResponse.status}`);
+        throw new Error(`Price API error! Status: ${priceResponse.status}`);
       }
 
-      const priceResult = await priceResponse.json();
-      setPriceResult(priceResult.average_price);
+      const priceData = await priceResponse.json();
+      
+      if (!priceData.average_price) {
+        setPriceResult(null);
+        throw new Error("Could not determine price for this item");
+      }
+      
+      setPriceResult(priceData.average_price);
 
       // Now handle image upload and create listing
       if (formData.image) {
@@ -61,7 +69,7 @@ export default function Donate() {
         uploadData.append('item', formData.item);
         uploadData.append('size', formData.size);
         uploadData.append('gender', formData.gender);
-        uploadData.append('price', priceResult.average_price);
+        uploadData.append('price', priceData.average_price);
 
         const uploadResponse = await fetch("http://localhost:8080/api/upload", {
           method: "POST",
@@ -75,6 +83,8 @@ export default function Donate() {
         const uploadResult = await uploadResponse.json();
         console.log("Item listed successfully:", uploadResult);
         
+        setSuccessMessage("Your item has been successfully donated!");
+        
         // Reset form after successful upload
         setFormData({
           item: "",
@@ -84,18 +94,9 @@ export default function Donate() {
         });
         setPreviewUrl(null);
       }
-
-      // const addClothes = await fetch("http://127.0.0.1:5000/api/clothes", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(formData),
-      // })
-      // const data = await addClothes.json()
-      // console.log(data)
     } catch (error) {
       console.error("Error submitting form:", error);
+      setErrorMessage(error.message || "Error submitting donation. Please try again.");
     } finally {
       setIsUploading(false);
     }
@@ -104,6 +105,19 @@ export default function Donate() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 sm:p-20">
       <h1 className="text-2xl font-bold mb-8">Donate Clothes</h1>
+      
+      {successMessage && (
+        <div className="w-full max-w-md mb-4 p-4 bg-green-100 border border-green-300 rounded-lg text-green-700">
+          {successMessage}
+        </div>
+      )}
+      
+      {errorMessage && (
+        <div className="w-full max-w-md mb-4 p-4 bg-red-100 border border-red-300 rounded-lg text-red-700">
+          {errorMessage}
+        </div>
+      )}
+      
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-6 w-full max-w-md bg-white p-6 rounded-lg shadow-md"
