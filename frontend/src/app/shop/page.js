@@ -1,10 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import { ShoppingBag, Gift, Recycle } from "lucide-react";
 
 export default function ShopPage() {
   const [clothingItems, setClothingItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Token conversion rate (example: $1 = 2 tokens)
+  const tokenConversionRate = 10;
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -25,6 +30,14 @@ export default function ShopPage() {
 
     fetchListings();
   }, []);
+
+  // Function to convert price string to tokens
+  const convertToTokens = (priceStr) => {
+    // Extract the numeric value from price string (e.g. "$20" -> 20)
+    const priceValue = parseFloat(priceStr.replace(/[^0-9.-]+/g, ""));
+    if (isNaN(priceValue)) return "N/A";
+    return Math.round(priceValue * tokenConversionRate);
+  };
 
   if (loading) {
     return (
@@ -60,7 +73,25 @@ export default function ShopPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Shop Clothing</h1>
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800 mb-4 md:mb-0">Shop Clothing</h1>
+        
+        {/* Navigation Buttons */}
+        <div className="flex space-x-4">
+          <Link href="/donate">
+            <button className="flex items-center bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors">
+              <Recycle className="w-5 h-5 mr-2" />
+              Donate Items
+            </button>
+          </Link>
+          <Link href="/">
+            <button className="flex items-center bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors">
+              <Gift className="w-5 h-5 mr-2" />
+              Purchase Packs
+            </button>
+          </Link>
+        </div>
+      </div>
       
       {clothingItems.length === 0 && (
         <p className="text-gray-500 mb-6">No items available right now. Be the first to donate!</p>
@@ -87,7 +118,12 @@ export default function ShopPage() {
             <div className="p-4">
               <h2 className="text-lg font-semibold text-gray-800">{item.name}</h2>
               <div className="flex justify-between mt-1">
-                <p className="text-gray-600">{item.price}</p>
+                <div>
+                  <p className="text-gray-600">{item.price}</p>
+                  <p className="text-yellow-600 font-medium text-sm">
+                    {convertToTokens(item.price)} tokens
+                  </p>
+                </div>
                 {item.size && (
                   <p className="text-gray-600">Size: {item.size}</p>
                 )}
@@ -97,7 +133,8 @@ export default function ShopPage() {
                   {item.gender.charAt(0).toUpperCase() + item.gender.slice(1)}
                 </p>
               )}
-              <button className="mt-4 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors">
+              <button className="mt-4 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center">
+                <ShoppingBag className="w-4 h-4 mr-2" />
                 Add to Cart
               </button>
             </div>
