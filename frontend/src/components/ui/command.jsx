@@ -50,21 +50,22 @@ function CommandDialog({
   );
 }
 
-function CommandInput({ className, ...props }) {
+function CommandInput({
+  className,
+  ...props
+}) {
   return (
     <div
       data-slot="command-input-wrapper"
-      className={cn(
-        "flex h-9 items-center gap-2 border-b px-3",
-        className
-      )}
-    >
-      <SearchIcon className="h-4 w-4 shrink-0 opacity-50" />
-      <input
-        type="text"
-        className="placeholder:text-muted-foreground flex h-full w-full bg-transparent text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50"
-        {...props} // Spread additional props
-      />
+      className="flex h-9 items-center gap-2 border-b px-3">
+      <SearchIcon className="size-4 shrink-0 opacity-50" />
+      <CommandPrimitive.Input
+        data-slot="command-input"
+        className={cn(
+          "placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
+          className
+        )}
+        {...props} />
     </div>
   );
 }
