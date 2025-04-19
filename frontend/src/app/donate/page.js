@@ -25,7 +25,7 @@ export default function Donate() {
     console.log("Form Data:", formData);
 
     try {
-      const response = await fetch("http://localhost:8080/api/price", {
+      const response = await fetch("http://127.0.0.1:5000/api/price", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -40,6 +40,16 @@ export default function Donate() {
       const result = await response.json();
       console.log("Average price:", result.average_price);
       setPriceResult(result.average_price);
+
+      // const addClothes = await fetch("http://127.0.0.1:5000/api/clothes", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(formData),
+      // })
+      // const data = await addClothes.json()
+      // console.log(data)
     } catch (error) {
       console.error("Error submitting form:", error);
     }
