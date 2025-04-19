@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import Image from "next/image";
 
 export default function ShopPage() {
   const [clothingItems, setClothingItems] = useState([]);
@@ -46,17 +45,18 @@ export default function ShopPage() {
     );
   }
 
-  // Fallback to sample data if no listings found
-  const displayItems = clothingItems.length > 0 
-    ? clothingItems 
-    : [
-        { id: 1, name: "Men's T-Shirt", price: "$20", image: "/images/tshirt.jpg" },
-        { id: 2, name: "Women's Dress", price: "$35", image: "/images/dress.jpg" },
-        { id: 3, name: "Wrist Watch", price: "$50", image: "/images/watch.jpg" },
-        { id: 4, name: "Men's Jacket", price: "$60", image: "/images/jacket.jpg" },
-        { id: 5, name: "Women's Shoes", price: "$45", image: "/images/shoes.jpg" },
-        { id: 6, name: "Hat", price: "$15", image: "/images/hat.jpg" },
-      ];
+  // Placeholder data with dummy images that will definitely exist
+  const placeholderItems = [
+    { id: 1, name: "Men's T-Shirt", price: "$20", image: "https://via.placeholder.com/300x400?text=T-Shirt" },
+    { id: 2, name: "Women's Dress", price: "$35", image: "https://via.placeholder.com/300x400?text=Dress" },
+    { id: 3, name: "Wrist Watch", price: "$50", image: "https://via.placeholder.com/300x400?text=Watch" },
+    { id: 4, name: "Men's Jacket", price: "$60", image: "https://via.placeholder.com/300x400?text=Jacket" },
+    { id: 5, name: "Women's Shoes", price: "$45", image: "https://via.placeholder.com/300x400?text=Shoes" },
+    { id: 6, name: "Hat", price: "$15", image: "https://via.placeholder.com/300x400?text=Hat" },
+  ];
+
+  // If no real items, use placeholders
+  const displayItems = clothingItems.length > 0 ? clothingItems : placeholderItems;
 
   return (
     <div className="p-6">
@@ -73,10 +73,15 @@ export default function ShopPage() {
             className="border rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
           >
             <div className="w-full h-48 relative">
+              {/* Handle invalid image URLs gracefully */}
               <img
                 src={item.image}
                 alt={item.name}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://via.placeholder.com/300x400?text=No+Image";
+                }}
               />
             </div>
             <div className="p-4">
