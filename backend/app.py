@@ -1,5 +1,6 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
+from getItemPrice import get_average_price
 import firebase_admin
 from firebase_admin import credentials, auth, firestore
 from functools import wraps
@@ -81,18 +82,20 @@ def signup():
     except Exception as e:
         return jsonify({'error': str(e)}), 400
     
-    
 @app.route('/api/price', methods=['GET', 'POST'])
 def index():
     average_price = None
     search_term = ''
 
     if request.method == "POST":
-        search_term = request.form.get('query', '')
+        # Handle both form submissions and JSON requests
+        if request.is_json:
+            data = request.get_json()
+            search_term = data.get('query', '')
+        else:
+            search_term = request.form.get('query', '')
+            
         if search_term:
             average_price = get_average_price(search_term)
 
         return render_template('index.html', average_price=average_price, search_term=search_term)
-    
-if __name__ == "__main__":
-    app.run(debug=True)
