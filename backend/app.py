@@ -1,5 +1,6 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
+from getItemPrice import get_average_price
 import firebase_admin
 from firebase_admin import credentials, auth, firestore
 from functools import wraps
