@@ -9,6 +9,16 @@ from functools import wraps
 from getItemPrice import get_average_price
 
 # Initialize Flask
+import random
+
+# Initialize Firebase Admin with direct configuration
+cred = credentials.Certificate('C:/Users/monke/Projects/LeBroncoHacks/backend/broncohacks-2025-firebase-adminsdk-fbsvc-6f935b8468.json')
+
+
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+
+# Setup Flask
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000"], supports_credentials=True)
 
@@ -91,6 +101,9 @@ def signup():
         db.collection('users').document(user.uid).set({
             'name': name,
             'email': email,
+            'tokens' : 0,
+            'Address' : '',
+            'phoneNumber' : '',
             'createdAt': firestore.SERVER_TIMESTAMP
         })
 
@@ -233,6 +246,64 @@ def get_listings():
     
     except Exception as e:
         print(f"Listing retrieval error: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+
+        return render_template('index.html', average_price=average_price, search_term=search_term)
+
+
+@app.route('/api/clothes', methods=['GET'])
+def getClothes():
+    try:
+        doc_ref = db.collection('clothes')
+        docs = doc_ref.stream()
+
+        # Convert documents to a list of dictionaries
+        clothes = []
+        for doc in docs:
+            clothes.append({'id': doc.id, **doc.to_dict()})
+
+        if len(clothes) < 4:
+            return jsonify({'error': 'Not enough items in the collection'}), 400
+        
+        random_clothes = random.sample(clothes, 4)
+
+        return jsonify(random_clothes), 200
+
+    except Exception as e: 
+        return jsonify(e), 500
+
+@app.route('/api/clothes', methods=['POST'])
+def newClothes():
+    try:
+        # Parse the JSON body from the request
+        data = request.get_json()
+
+        # Add the clothing item to the Firestore database
+        doc_ref = db.collection('clothes').add(data)
+
+        return jsonify({'message': 'Clothing item added successfully', 'id': doc_ref[1].id}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/clothes/<id>', methods=['PATCH'])
+def updateClothes(id):
+    try:
+        # Parse the JSON body from the request
+        data = request.get_json()
+
+        # Validate that at least one field is provided for the update
+        if not data:
+            return jsonify({'error': 'No fields provided for update'}), 400
+
+        # Reference the specific document in the 'clothes' collection
+        doc_ref = db.collection('clothes').document(id)
+
+        # Update the document with the provided fields
+        doc_ref.update(data)
+
+        return jsonify({'message': 'Clothing item updated successfully'}), 200
+    except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 if __name__ == "__main__":
