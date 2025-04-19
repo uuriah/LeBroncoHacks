@@ -5,7 +5,7 @@
 ## 🛍️ Overview
 
 **Carbon Closet** is a gamified thrift e-commerce platform that streamlines buying, selling, and donating vintage clothes. It aims to save users time while encouraging sustainable fashion through an engaging token and gacha reward system.
-
+Demo Video: https://youtu.be/Rzp-D-KonUo
 ---
 
 ## 💡 Problem
