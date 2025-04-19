@@ -1,7 +1,7 @@
 // app/actions/auth.js
 'use server';
 
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { redirect } from "next/navigation";
 
@@ -15,25 +15,23 @@ export async function signup(formData) {
   }
 
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    
-    if (user) {
-      redirect('/dashboard');
+    const response = await fetch('http://localhost:5000/api/auth/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password, name }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return { error: data.error };
     }
+
+    redirect('/dashboard');
   } catch (error) {
-    switch (error.code) {
-      case 'auth/email-already-in-use':
-        return { error: 'Email already registered' };
-      case 'auth/invalid-email':
-        return { error: 'Invalid email address' };
-      case 'auth/operation-not-allowed':
-        return { error: 'Operation not allowed' };
-      case 'auth/weak-password':
-        return { error: 'Password is too weak' };
-      default:
-        return { error: 'Something went wrong' };
-    }
+    return { error: 'Something went wrong' };
   }
 }
 
@@ -46,24 +44,22 @@ export async function login(formData) {
   }
 
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    
-    if (user) {
-      redirect('/dashboard');
+    const response = await fetch('http://localhost:5000/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return { error: data.error };
     }
+
+    redirect('/dashboard');
   } catch (error) {
-    switch (error.code) {
-      case 'auth/invalid-email':
-        return { error: 'Invalid email address' };
-      case 'auth/user-disabled':
-        return { error: 'This account has been disabled' };
-      case 'auth/user-not-found':
-        return { error: 'No account found with this email' };
-      case 'auth/wrong-password':
-        return { error: 'Incorrect password' };
-      default:
-        return { error: 'Something went wrong' };
-    }
+    return { error: 'Invalid login credentials' };
   }
 }
