@@ -32,9 +32,6 @@ db = firestore.client()
 BUCKET_NAME = 'broncohacks-2025.firebasestorage.app'  # Update this if needed
 bucket = storage.bucket(BUCKET_NAME)
 
-# Print default bucket for verification
-# default_bucket = storage.bucket()
-# print(f"Default bucket name: {default_bucket.name}")
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
